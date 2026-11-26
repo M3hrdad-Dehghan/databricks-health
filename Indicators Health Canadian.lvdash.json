@@ -1,0 +1,483 @@
+{
+  "datasets": [
+    {
+      "name": "ca000c71",
+      "displayName": "health",
+      "queryLines": [
+        "SELECT y.year, g.geography, i.indicator, d.age_group, d.sex,\r\n",
+        "       ROUND(f.value, 1) AS percent\r\n",
+        "FROM workspace.dev_gold.fact_health_indicator f\r\n",
+        "JOIN workspace.dev_gold.dim_geography   g ON f.geo_key = g.geo_key\r\n",
+        "JOIN workspace.dev_gold.dim_indicator   i ON f.indicator_key = i.indicator_key\r\n",
+        "JOIN workspace.dev_gold.dim_measure     m ON f.measure_key = m.measure_key\r\n",
+        "JOIN workspace.dev_gold.dim_demographic d ON f.demo_key = d.demo_key\r\n",
+        "JOIN workspace.dev_gold.dim_year        y ON f.year = y.year\r\n",
+        "WHERE m.characteristic LIKE 'Percent%'"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "7b654b4a",
+      "displayName": "Dashboard",
+      "layout": [
+        {
+          "widget": {
+            "name": "001abc95",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ca000c71",
+                  "fields": [
+                    {
+                      "name": "avg(percent)",
+                      "expression": "AVG(`percent`)"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`geography` IN ('Ontario')"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "avg(percent)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 7,
+            "y": 0,
+            "width": 5,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "ff24decb",
+            "spec": {
+              "widgetType": "text",
+              "version": 1,
+              "encodings": {
+                "text": {
+                  "lines": [
+                    "<span style=\"text-align:center;display:block\"><span style=\"font-size: 18px;font-weight: 700;\">Average Percent for Ontario</span></span>"
+                  ],
+                  "fields": []
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 7,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "trend-percent-ontario",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ca000c71",
+                  "fields": [
+                    {
+                      "name": "geography",
+                      "expression": "`geography`"
+                    },
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "avg(percent)",
+                      "expression": "AVG(`percent`)"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`geography` IN ('Ontario')"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Trend of percent in Ontario",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "mark": {
+                "lineShape": "smooth"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "year",
+                  "axis": {
+                    "labelAngle": 45,
+                    "hideTitle": true
+                  },
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(percent)",
+                  "axis": {
+                    "hideGrid": true,
+                    "hideTitle": true
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "geography",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 12,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "percent-by-provinces",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ca000c71",
+                  "fields": [
+                    {
+                      "name": "geography",
+                      "expression": "`geography`"
+                    },
+                    {
+                      "name": "avg(percent)",
+                      "expression": "AVG(`percent`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Percent by provinces",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  }
+                ]
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "geography",
+                  "axis": {
+                    "hideTitle": true
+                  },
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(percent)",
+                  "axis": {
+                    "hideTitle": true
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "ontario-percent-by-age-group",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ca000c71",
+                  "fields": [
+                    {
+                      "name": "avg(percent)",
+                      "expression": "AVG(`percent`)"
+                    },
+                    {
+                      "name": "age_group",
+                      "expression": "`age_group`"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`geography` IN ('Ontario')"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Ontario percent by age group",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  }
+                ]
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "avg(percent)",
+                  "axis": {
+                    "hideTitle": true
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "age_group",
+                  "axis": {
+                    "hideTitle": true
+                  },
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 13,
+            "width": 12,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "8b2e5e52",
+      "displayName": "Global Filters",
+      "layout": [
+        {
+          "widget": {
+            "name": "6aac7117",
+            "queries": [
+              {
+                "name": "dashboards/01f1e94b88bd1bd3bf1e6b698f575750/datasets/01f1e953205f17ae8e73791598607ca1_indicator",
+                "query": {
+                  "datasetName": "ca000c71",
+                  "fields": [
+                    {
+                      "name": "indicator",
+                      "expression": "`indicator`"
+                    },
+                    {
+                      "name": "indicator_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "indicator",
+                    "queryName": "dashboards/01f1e94b88bd1bd3bf1e6b698f575750/datasets/01f1e953205f17ae8e73791598607ca1_indicator"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "3f5506ac",
+            "queries": [
+              {
+                "name": "dashboards/01f1e94b88bd1bd3bf1e6b698f575750/datasets/01f1e953205f17ae8e73791598607ca1_age_group",
+                "query": {
+                  "datasetName": "ca000c71",
+                  "fields": [
+                    {
+                      "name": "age_group",
+                      "expression": "`age_group`"
+                    },
+                    {
+                      "name": "age_group_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "age_group",
+                    "queryName": "dashboards/01f1e94b88bd1bd3bf1e6b698f575750/datasets/01f1e953205f17ae8e73791598607ca1_age_group"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "85735143",
+            "queries": [
+              {
+                "name": "dashboards/01f1e94b88bd1bd3bf1e6b698f575750/datasets/01f1e953205f17ae8e73791598607ca1_sex",
+                "query": {
+                  "datasetName": "ca000c71",
+                  "fields": [
+                    {
+                      "name": "sex",
+                      "expression": "`sex`"
+                    },
+                    {
+                      "name": "sex_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true
+              },
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "sex",
+                    "queryName": "dashboards/01f1e94b88bd1bd3bf1e6b698f575750/datasets/01f1e953205f17ae8e73791598607ca1_sex"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 4,
+            "width": 1,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
