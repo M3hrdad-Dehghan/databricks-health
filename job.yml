@@ -1,0 +1,68 @@
+resources:
+  jobs:
+    job_health_weekly:
+      name: "job_health_weekly "
+      email_notifications:
+        on_success:
+          - 
+        on_failure:
+          - 
+      schedule:
+        quartz_cron_expression: 28 30 19 * * ?
+        timezone_id: America/Toronto
+        pause_status: UNPAUSED
+      tasks:
+        - task_key: setup
+          notebook_task:
+            notebook_path: notebooks/01_setup
+            source: GIT
+          environment_key: Default
+        - task_key: ingest
+          depends_on:
+            - task_key: setup
+          notebook_task:
+            notebook_path: notebooks/02-ingest
+            source: GIT
+          environment_key: Default
+        - task_key: bronze
+          depends_on:
+            - task_key: ingest
+          notebook_task:
+            notebook_path: notebooks/03-bronze
+            source: GIT
+          environment_key: Default
+        - task_key: silver
+          depends_on:
+            - task_key: bronze
+          notebook_task:
+            notebook_path: notebooks/04-silver
+            source: GIT
+          environment_key: Default
+        - task_key: gold
+          depends_on:
+            - task_key: silver
+          notebook_task:
+            notebook_path: notebooks/05-gold
+            source: GIT
+          environment_key: Default
+      git_source:
+        git_url: https://github.com/M3hrdad-Dehghan/databricks-health
+        git_provider: gitHub
+        git_branch: main
+      queue:
+        enabled: true
+      parameters:
+        - name: env
+          default: prod
+        - name: catalog
+          default: workspace
+        - name: table_id
+          default: "13100905"
+        - name: run_date
+          default: "{{job.start_time.iso_date}}"
+      environments:
+        - environment_key: Default
+          spec:
+            environment_version: "6"
+      performance_target: PERFORMANCE_OPTIMIZED
+      parent_path: /Workspace/Users/m3hrdad.66@gmail.com
